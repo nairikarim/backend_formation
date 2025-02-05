@@ -1,9 +1,7 @@
 var express = require('express');
 var router = express.Router();
-
+const osController = require('../controllers/osController');
 /* GET home page. */
-router.get('/', function(req, res, next) {
-  res.json('index');  
-});
+router.get('/getOsInformation',osController.getOsInformation);
 
 module.exports = router;
