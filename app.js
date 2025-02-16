@@ -4,10 +4,10 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-require("dotenv").config();
+require("dotenv").config(); // configuration 
 
-const {connectToMongoDb} = require("./config/db");
-const http =require('http'); //1
+const {connectToMongoDb} = require("./config/db"); // importation 
+const http =require('http'); //1 
 
 var indexRouter = require('./routes/indexRouter');
 var usersRouter = require('./routes/userRouter');
@@ -25,6 +25,8 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/os', osRouter);
 
+
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
@@ -41,8 +43,8 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-const server = http.createServer(app); //2
- server.listen(process.env.port ,() => {
+const server = http.createServer(app); // 
+ server.listen(process.env.port ,() => { // pour lancer serveur
   connectToMongoDb()
   console.log("app is running on port 5000") ;
  });
