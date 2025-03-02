@@ -3,7 +3,9 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-
+const session = require("express-session"); //session
+const cors =require("cors");
+const logMiddleware = require('./middlewares/logsMiddleware'); //log
 require("dotenv").config(); // configuration 
 
 const {connectToMongoDb} = require("./config/db"); // importation 
@@ -11,9 +13,30 @@ const http =require('http'); //1
 
 var indexRouter = require('./routes/indexRouter');
 var usersRouter = require('./routes/userRouter');
-var osRouter = require('./routes/osRouter');
+var activitiesRouter = require('./routes/activityRouter');
+var servicesRouter = require('./routes/serviceRouter');
+
+var citiesRouter = require('./routes/cityRouter');
+var reservationsRouter = require('./routes/reservationRouter');
+
 
 var app = express();
+app.use(
+  cors({
+    origin:"http://localhost:3000",
+    methods:"GET,POST,PUT,Delete",
+  })
+)
+app.use(session({   //cobfig session
+  secret: "net secret pfe",
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+    secure: {secure: false},
+    maxAge: 24*60*60,
+  
+  },  
+}))
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -23,8 +46,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/os', osRouter);
+app.use('/activities', activitiesRouter);
+app.use('/services',servicesRouter);
 
+app.use('/cities',citiesRouter);
+app.use('/reservations',reservationsRouter);
 
 
 // catch 404 and forward to error handler
@@ -46,5 +72,5 @@ app.use(function(err, req, res, next) {
 const server = http.createServer(app); // 
  server.listen(process.env.port ,() => { // pour lancer serveur
   connectToMongoDb()
-  console.log("app is running on port 5000") ;
+  console.log("app is running on port 3000") ;
  });

@@ -1,5 +1,13 @@
 const userModel = require('../models/userSchema');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 
+
+const maxTime = 24*60 *60 //24H
+const createtoken = (id) =>{
+    return jwt.sign({id},'net secret pfe',{expiresIn: maxTime})
+}
+//67b1b1c906d5b758e9b22ac4 + net secret pfe +1M
 
 module.exports.addUserClient =async (req,res) => {
     try{
@@ -106,6 +114,33 @@ module.exports.updateuserById = async (req, res) => {
         res.status(500).json({message: error.message});
     }
     }
+
+
+module.exports.login= async (req,res) => {
+    try {
+        const { email , password } = req.body;
+        const user = await userModel.login(email, password)
+        const token = createtoken(user._id);
+        res.cookie("jwt_token_triply", token, {httpOnly:false,maxAge:maxTime * 1000})
+        res.status(200).json({ user, token });
+    } catch (error) {
+        res.status(500).json({message: error.message});
+    }
+}
+
+module.exports.logout= async (req,res) => {
+    try {
+        
+
+        res.cookie("jwt_token_triply", "", {httpOnly:false,maxAge:1})
+        res.status(200).json("logged ")
+    } catch (error) {
+        res.status(500).json({message: error.message});
+    }
+}
+
+
+
 
 
 
