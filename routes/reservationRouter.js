@@ -1,12 +1,15 @@
 const express = require('express');
 const router=express.Router();
-const cityContoller =require('../controllers/reservationController');
+const reservationController =require('../controllers/reservationController');
+const { requireAuthUser, isAdmin } = require('../middlewares/authMiddleware');
 
-router.post('/affectReservation',cityContoller.affectReservation);
-router.get('/getallReservation',cityContoller.getallReservation);
-router.get('/getReservationByid/:id',cityContoller.getReservationByid);
-router.get('/getReservationByActivityId/:activityId',cityContoller.getReservationByActivityId);
-router.put('/desaffectReservation',cityContoller.desaffectReservation);
+router.post('/affectReservation',reservationController.affectReservation);
+router.get('/getallReservation',reservationController.getallReservation);
+router.get('/getReservationByid/:id',reservationController.getReservationByid);
+router.get('/getReservationByActivityId/:activityId',reservationController.getReservationByActivityId);
+router.put('/desaffectReservation',reservationController.desaffectReservation);
+router.get('/getUserReservations/:userId/:etat', reservationController.getUserReservations);
+router.put('/updateReservationEtat/:reservationId', reservationController.updateReservationEtat);
 
 
 module.exports=router;

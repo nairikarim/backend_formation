@@ -14,17 +14,19 @@ const http =require('http'); //1
 var indexRouter = require('./routes/indexRouter');
 var usersRouter = require('./routes/userRouter');
 var activitiesRouter = require('./routes/activityRouter');
-var servicesRouter = require('./routes/serviceRouter');
+var favorisRouter = require('./routes/favorisRouter');
+var avisRouter = require('./routes/avisRouter');
 
 var citiesRouter = require('./routes/cityRouter');
 var reservationsRouter = require('./routes/reservationRouter');
-
+var notficationRouter = require('./routes/notifcationRouter');
 
 var app = express();
 app.use(
   cors({
-    origin:"http://localhost:3000",
-    methods:"GET,POST,PUT,Delete",
+    origin: true,
+    methods: "GET,POST,PUT,DELETE",
+    credentials: true // Important pour les sessions/cookies
   })
 )
 app.use(session({   //cobfig session
@@ -43,14 +45,16 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/activities', activitiesRouter);
-app.use('/services',servicesRouter);
-
+app.use('/favoris',favorisRouter);
+app.use('/avis',avisRouter);
 app.use('/cities',citiesRouter);
 app.use('/reservations',reservationsRouter);
+app.use('/notf',notficationRouter);
+
+app.use('/files', express.static(path.join(__dirname, 'public', 'files')));
 
 
 // catch 404 and forward to error handler

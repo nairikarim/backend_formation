@@ -1,22 +1,40 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
-const activitySchema =new mongoose.Schema(
-    {
-        activityname: { type: String, required: true },
-        activity_image: { type: String, required: false, default: 'activity.png' },
+
+const activitySchema = new mongoose.Schema(
+    {   
+        title : {type :String ,required :true },
+        location: {type : String ,required :true},
         description: { type: String, required: true },
-        dateDispo: {type:Date, required :true},
-        city: {type:mongoose.Schema.Types.ObjectId,ref :'City'},
-        reservation: [{type : mongoose.Schema.Types.ObjectId,ref : 'reservation'}],
-        
-      },
-      { timestamps: true }
-    );
-    
+        inclus: { type: String, required: true },
+        Point_Forts: { type: String, required: true },
+        lieu_de_rendez_vous: { type: String, required: true },
+        date: { type: Date, required: true },
+        price: { type: String, required: true },
 
 
-activitySchema.post("save",async function(req,res,next){
-    console.log(" new user was created & saved successfully")
-})
+        typeActivitiy: { 
+            type :String  ,required: true  },
+        mainimage: { type: String, required: false, default: 'activité.png' },
+        images : { type: Array ,required: true},
+        reservations: [{ type: mongoose.Schema.Types.ObjectId, ref: "reservation",  }],
+        avis: [{ type: mongoose.Schema.Types.ObjectId, ref: "Avis",}],
+        createdBy:{ type: mongoose.Schema.Types.ObjectId, ref: "User",},
+     
+        favoris: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Activity'  // Maintenant, ce sont des userId
+        }],
+        city: { 
+            type: mongoose.Schema.Types.ObjectId, 
+            ref: "City", 
+            required: true 
+          },
+
+    },
+    { timestamps: true }
+);
+
+
 const Activity = mongoose.model('Activity', activitySchema);
 module.exports = Activity;

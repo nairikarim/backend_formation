@@ -1,22 +1,15 @@
 const mongoose = require('mongoose');
 
-const citySchema  = new  mongoose.Schema(
-    {
+const citySchema = new mongoose.Schema({
+  nom: { type: String, required: true, unique: true }, // "Paris"
+  description: { type: String, required: true }, // "Capitale de la France"
+  images : { type: Array ,required: true},
+  activities: [{ 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: "Activity" 
+  }]
+}, { timestamps: true });
 
-        cityname: { type: String, required: true },
-        description: { type: String, required: true },
-        image: { type: String, required: true },
-        activities : [{type : mongoose.Schema.Types.ObjectId,ref : 'Activity'}] ,//one to many 
-        services : [{type : mongoose.Schema.Types.ObjectId,ref : 'Service'}] //one to many 
-
-    
-    },
-{ timestamps: true });
-
-citySchema.post("save", async function(req,res,next){
-    console.log("new city was created & saved successfully")
-})
+module.exports = mongoose.model('City', citySchema);
 
 
-const City=mongoose.model('City',citySchema);
-module.exports=City;

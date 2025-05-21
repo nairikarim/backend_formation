@@ -1,26 +1,46 @@
-const jwt = require("jsonwebtoken");
-const userModel = require("../models/userSchema");
-const session= require("express-session");
-const requireAuthUser = (req, res, next) => {
-   const token = req.cookies.jwt_token_triply;
+const jwt = require('jsonwebtoken');
+const userModel = require('../models/userSchema');
 
-  //const authHeader = req.headers.authorization;
-  //const token = authHeader && authHeader.split(" ")[1];
-  // console.log("token", token);
-  if (token) {
-    jwt.verify(token, 'net secret pfe', async (err, decodedToken) => {
-      if (err) {
-        console.log("il ya une erreur au niveau du token", err.message);
-        req.session.user = null;  //session null
-        res.json("/Problem_token");
-      } else {
-        req.session.user = await userModel.findById(decodedToken.id); 
-        next();
-      }
-    });
-  } else {
-     req.session.user = null; //session null
-    res.json("/pas_de_token");
-  }
+const requireAuthUser = (req, res, next) => {
+    console.log("header auth ", req.headers['authorization']);
+    
+    const token = req.headers['authorization'] && req.headers['authorization'].split(' ')[1];  // Extract token after 'Bearer'
+
+    if (token) {
+        // Vérifier le token
+        jwt.verify(token, 'net secret pfe', async (err, decodedToken) => {
+            if (err) {
+                console.log("Erreur avec le token:", err.message);
+                return res.status(401).json({ message: "Token invalid" });
+            } else {
+                // Trouver l'utilisateur correspondant à l'ID du token
+                try {
+                    const user = await userModel.findById(decodedToken.id);
+                    console.log("User found:", user);
+                    
+                    if (user.role === "admin") {
+                        req.user = user;  // Attacher l'utilisateur à la requête
+                        return next();  // Passer à la suite
+                    } else {
+                        return res.status(404).json({ message: "User not allowed" });
+                    }
+                } catch (err) {
+                    return res.status(500).json({ message: "Error finding user" });
+                }
+            }
+        });
+    } else {
+        // Pas de token, renvoyer une erreur
+        return res.status(401).json({ message: "No token provided" });
+    }
 };
-module.exports = { requireAuthUser };
+
+const isAdmin = (req, res, next) => {
+    if (req.user && req.user.role === 'admin') {
+        next(); // ✅ OK, c’est un admin
+    } else {
+        return res.status(403).json({ message: 'Accès refusé : admin uniquement.' });
+    }
+};
+
+module.exports = { requireAuthUser, isAdmin };
